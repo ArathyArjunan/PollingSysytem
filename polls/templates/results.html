@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Poll Results</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+    h1 { color: #2c3e50; }
+    .result {
+      background: #ecf0f1;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Poll Results</h1>
+    <div id="results"></div>
+    <a href="index.html" class="back">⬅ Back to Polls</a>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+    let token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Unauthorized! Please login as admin.");
+      window.location.href = "index.html";
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const pollId = urlParams.get("id");
+
+    loadResults();
+
+    async function loadResults() {
+      const resUser = await fetch(`${API_BASE}/me/`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!resUser.ok) { logout(); return; }
+      const user = await resUser.json();
+      if (!user.is_staff) {
+        alert("Only admins can view results.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/polls/${pollId}/results/`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const poll = await res.json();
+        const container = document.getElementById("results");
+        container.innerHTML = `<h2>${poll.title}</h2>`;
+
+        poll.questions.forEach(q => {
+          const qDiv = document.createElement("div");
+          qDiv.innerHTML = `<h3>${q.text}</h3>`;
+          q.choices.forEach(c => {
+            const line = document.createElement("div");
+            line.className = "result";
+            line.textContent = `${c.text}: ${c.votes} votes (${c.pct}%)`;
+            qDiv.appendChild(line);
+          });
+          container.appendChild(qDiv);
+        });
+      } else {
+        document.getElementById("results").innerText = "Failed to load results.";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
