@@ -224,7 +224,7 @@
 
         <!-- RIGHT: Main content -->
         <div>
-          <div class="panel">
+          <div class="panel" id="main-content-panel" style="display:none">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <div style="display:flex;flex-direction:column">
                 <div class="tabs" role="tablist">
@@ -242,7 +242,7 @@
           </div>
 
           <!-- Active Polls -->
-          <div id="content-polls" style="margin-top:12px">
+          <div id="content-polls" style="margin-top:12px; display:none">
             <div id="poll-list"></div>
           </div>
 
@@ -376,10 +376,16 @@ function logout(){
   myVotes = [];
   document.getElementById('user-box').style.display = 'none';
   document.getElementById('auth-forms').style.display = 'block';
+  document.getElementById('main-content-panel').style.display = 'none';
+  document.getElementById('content-polls').style.display = 'none';
+  document.getElementById('content-myvotes').style.display = 'none';
+  document.getElementById('content-admin').style.display = 'none';
   document.getElementById('tab-admin').style.display = 'none';
   document.getElementById('admin-badge').style.display = 'none';
   setStatus('Logged out');
-  renderPollList(); renderMyVotes();
+  
+  // Clear top controls
+  document.getElementById('top-controls').innerHTML = '';
 }
 
 /* ======= Initialization after login ======= */
@@ -387,6 +393,7 @@ async function initializeAfterLogin(){
   // hide forms, show userbox
   document.getElementById('auth-forms').style.display = 'none';
   document.getElementById('user-box').style.display = 'block';
+  document.getElementById('main-content-panel').style.display = 'block';
 
   await loadCurrentUser();
   await Promise.all([loadPolls(), loadMyVotes()]);
@@ -426,6 +433,7 @@ async function loadCurrentUser(){
     // fallback to show login
     document.getElementById('auth-forms').style.display = 'block';
     document.getElementById('user-box').style.display = 'none';
+    document.getElementById('main-content-panel').style.display = 'none';
   }
 }
 
@@ -833,6 +841,10 @@ function escapeHtml(str){
     // not logged in: show login form
     document.getElementById('auth-forms').style.display = 'block';
     document.getElementById('user-box').style.display = 'none';
+    document.getElementById('main-content-panel').style.display = 'none';
+    document.getElementById('content-polls').style.display = 'none';
+    document.getElementById('content-myvotes').style.display = 'none';
+    document.getElementById('content-admin').style.display = 'none';
     setStatus('Not signed in');
   }
 })();

@@ -67,7 +67,7 @@ class PollResultsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, poll_id):
-        poll = get_object_or_404(poll, pk=poll_id)
+        poll = get_object_or_404(Polls, pk=poll_id)
         data = []
         for q in poll.questions.all():
             choices = q.choices.annotate(votes_count=Count("votes"))
@@ -91,7 +91,7 @@ class PollExportView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, poll_id):
-        poll = get_object_or_404(poll, pk=poll_id)
+        poll = get_object_or_404(Polls, pk=poll_id)
         votes = Vote.objects.filter(poll=poll).select_related("user", "question", "choice")
 
         response = HttpResponse(content_type="text/csv")
