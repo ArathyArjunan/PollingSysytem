@@ -60,7 +60,7 @@ polling-system/
 
 ⚙️ Installation
 1️⃣ Clone the repo
-git clone https://github.com/your-username/polling-system.git
+git clone  https://github.com/ArathyArjunan/PollingSysytem.git
 cd polling-system
 
 2️⃣ Create virtual environment
